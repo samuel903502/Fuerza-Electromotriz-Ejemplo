@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   
+    <meta charset="UTF-8">
+    <title>Fuerza Electromotriz en Celda Electroquímica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #cell-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .electrode {
+            width: 100px;
+            height: 200px;
+            border: 2px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 20px;
+        }
+        #anode { background-color: #b0c4de; }
+        #cathode { background-color: #98fb98; }
+        #electron-flow {
+            width: 200px;
+            height: 50px;
+            background: linear-gradient(to right, blue, red);
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        #electron {
+            width: 20px;
+            height: 20px;
+            background-color: #4287f5;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: electronMove 3s linear infinite;
+        }
+        @keyframes electronMove {
+            0% { left: -20px; }
+            100% { left: calc(100% + 20px); }
+        }
+        #electron-explanation {
+            background-color: #e6f2ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fuerza Electromotriz (FEM) en Celda de Daniell</h1>
+    
+    <p>Ajusta la concentración de iones Cu²⁺ para ver cómo cambia la FEM:</p>
+    
+    <input type="range" id="concentration-slider" min="0.001" max="1" step="0.001" value="1">
+    <label id="concentration-label">Concentración: 1.000 M</label>
+    
+    <div id="cell-diagram">
+        <div id="anode" class="electrode">
+            <strong>Ánodo (Zn)</strong>
+            <p>Oxidación</p>
+        </div>
+        <div id="cathode" class="electrode">
+            <strong>Cátodo (Cu)</strong>
+            <p>Reducción</p>
+        </div>
+    </div>
+    
+    <div id="electron-flow">
+        <div id="electron"></div>
+    </div>
+    
+    <div id="electron-explanation">
+        <h3>Animación del Flujo de Electrones</h3>
+        <p>La pelotita azul representa un electrón moviéndose a través del circuito externo:</p>
+        <ul>
+            <li>🔵 El electrón se mueve del ánodo (Zn) al cátodo (Cu)</li>
+            <li>⚡ Este movimiento genera la corriente eléctrica</li>
+            <li>🔄 El flujo continuo de electrones produce la fuerza electromotriz (FEM)</li>
+        </ul>
+        <p>La velocidad y dirección del electrón dependen del potencial de la celda, que cambia con la concentración de iones.</p>
+    </div>
+    
+    <div id="fem-result">
+        <h2>Fuerza Electromotriz (FEM): <span id="fem-value">1.10</span> V</h2>
+    </div>
+    
+    <script>
+        const slider = document.getElementById('concentration-slider');
+        const concentrationLabel = document.getElementById('concentration-label');
+        const femValue = document.getElementById('fem-value');
+
+        // Constantes para la ecuación de Nernst
+        const E0 = 1.1;  // Potencial estándar (V)
+        const R = 8.314; // Constante universal de los gases (J/mol·K)
+        const T = 298;   // Temperatura (K)
+        const F = 96485; // Constante de Faraday (C/mol)
+        const n = 2;     // Número de electrones transferidos
+
+        function calculateFEM(concentration) {
+            // Ecuación de Nernst: E = E° - (RT/nF) * ln(Q)
+            const Q = 1 / concentration;
+            const femCalculated = E0 - (R * T / (n * F)) * Math.log(Q);
+            return femCalculated.toFixed(3);
+        }
+
+        slider.addEventListener('input', function() {
+            const concentration = parseFloat(this.value);
+            concentrationLabel.textContent = `Concentración: ${concentration.toFixed(3)} M`;
+            femValue.textContent = calculateFEM(concentration);
+        });
+    </script>
+</body>
+</html>
